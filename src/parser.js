@@ -6,13 +6,30 @@ function parseItem(html) {
   const m = title.match(/^(.*)：(.+?)の(インターネット公売|公有財産売却)/);
   const text = toText(html);
   const name = m ? m[1] : title.replace(/\s*-\s*KSI官公庁オークション.*$/, '');
+  const period = parsePeriod(pickAfter(text, ['入札期間', '入札受付期間', '申込期間'], 80));
   return {
     name: name,
     agency: m ? m[2] : '',
     price: pickYen(text, ['見積価額', '予定価格', '最低売却価格', '売却価格']),
-    period: pickAfter(text, ['入札期間', '入札受付期間', '申込期間'], 50),
+    start: period.start,
+    end: period.end,
     category: pickCategory(html, text, name),
   };
+}
+
+// 例：「開始： 2026年11月17日13時0分 〜 終了： 2026年11月19日13時0分 …」
+// → { start: Date, end: Date }。日時が読めなければ start に元の文字列を入れる
+function parsePeriod(s) {
+  const t = toHalfWidth(s);
+  const re = /(\d{4})[年\/.-](\d{1,2})[月\/.-](\d{1,2})日?\s*(?:[（(][^）)]*[）)])?\s*(?:(\d{1,2})[時:](\d{1,2})分?)?/g;
+  const dates = [];
+  let m;
+  while ((m = re.exec(t)) && dates.length < 2) {
+    dates.push(new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]),
+                        Number(m[4] || 0), Number(m[5] || 0)));
+  }
+  if (!dates.length) return { start: s.trim(), end: '' };
+  return { start: dates[0], end: dates[1] || '' };
 }
 
 // カテゴリ：構造化データ → パンくずリスト → 「カテゴリ」見出しの順に探す

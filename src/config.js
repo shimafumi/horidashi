@@ -12,10 +12,14 @@ const CONFIG = {
   AUTO_INTERVAL_MIN: 10,        // 自動更新の間隔（分）。1, 5, 10, 15, 30 のいずれか
 };
 
-const HEADERS = ['物件ID', 'URL', '物件名', '執行機関', '見積価額等(円)', '入札期間',
+const HEADERS = ['物件ID', 'URL', '物件名', '執行機関', '見積価額等(円)', '入札開始', '入札終了',
                  '相場(手入力・円)', '相場比', 'メモ', '取得日時', '欠番', 'カテゴリ'];
-// 列番号（1始まり）。カテゴリは既存シートの列がずれないよう末尾に追加
-const COL = { ID: 1, NAME: 3, MEMO: 9, FETCHED: 10, MISSING: 11, CATEGORY: 12 };
+// 列番号（1始まり）
+const COL = {
+  ID: 1, NAME: 3, PRICE: 5, START: 6, END: 7, MARKET: 8, RATIO: 9,
+  MEMO: 10, FETCHED: 11, MISSING: 12, CATEGORY: 13,
+};
+const OLD_PERIOD_HEADER = '入札期間'; // 旧レイアウト（開始・終了が1列）の見出し
 const MISSING_MARK = '欠番';
 
 // 連番取得の進捗（スクリプトプロパティに保存）

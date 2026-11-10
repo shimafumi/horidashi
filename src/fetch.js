@@ -53,5 +53,5 @@ function judgePage(res) {
 
 // 空ページ（欠番）の判定：執行機関・価格・入札期間のどれも取れなければ欠番とみなす
 function isEmptyItem(item) {
-  return !item.agency && !item.price && !item.period;
+  return !item.agency && !item.price && !item.start;
 }
