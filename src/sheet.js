@@ -1,6 +1,4 @@
 // ===== シート操作 =====
-const DATE_FORMAT = 'yyyy/mm/dd hh:mm';
-
 // 見出し行を書き込む（列構成を変えたときは、一覧シートを作り直して取り直す）
 function ensureHeaders(sheet) {
   sheet.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]).setFontWeight('bold');
@@ -11,20 +9,33 @@ function itemUrl(id) {
   return `${CONFIG.BASE_URL}/items/${id}/`;
 }
 
-// 物件名〜入札終了（COL.NAME から6列）の値
+// 物件名〜入札終了（COL.NAME から順に並ぶ列）の値
 function itemValues(item) {
   return [item.name || '', item.category || '', item.agency || '', item.price || '',
           item.start || '', item.end || ''];
 }
 
+// 物件ID・URL・取得日時だけを入れた行
+function baseRow(id) {
+  const row = new Array(HEADERS.length).fill('');
+  row[COL.ID - 1] = String(id);
+  row[COL.URL - 1] = itemUrl(id);
+  row[COL.FETCHED - 1] = new Date();
+  return row;
+}
+
 function itemRow(id, item) {
-  return [
-    String(id), itemUrl(id), ...itemValues(item), new Date(), '', '',
-  ];
+  const row = baseRow(id);
+  const values = itemValues(item);
+  row.splice(COL.NAME - 1, values.length, ...values);
+  return row;
 }
 
 function missingRow(id) {
-  return [String(id), itemUrl(id), '', '', '', '', '', '', new Date(), MISSING_MARK, 1];
+  const row = baseRow(id);
+  row[COL.MISSING - 1] = MISSING_MARK;
+  row[COL.MISSING_COUNT - 1] = 1;
+  return row;
 }
 
 function appendRows(sheet, rows) {

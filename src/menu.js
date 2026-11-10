@@ -35,6 +35,8 @@ function debugItem() {
   const label = { ok: '物件あり', missing: '欠番', error: 'エラー' }[judgePage(r).status];
   Logger.log(`HTTP ${r.code} / HTML文字数: ${r.text.length} / 判定: ${label}`);
   Logger.log('解析結果: ' + JSON.stringify(parseItem(r.text)));
+  Logger.log('パンくず（構造化データ）: ' + JSON.stringify(breadcrumbFromJsonLd(r.text)) +
+             ' / パンくず（HTML）: ' + JSON.stringify(breadcrumbFromHtml(r.text)));
   Logger.log(toText(r.text).slice(0, 3000));
   notify(`ID ${id}：HTTP ${r.code}、判定「${label}」（詳細は実行ログ）`);
 }

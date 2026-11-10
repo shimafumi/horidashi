@@ -1,9 +1,9 @@
-// ===== 自動実行（最新まで取り終わったら自動停止） =====
+// ===== 自動更新（毎日1回。アクセス制限を受けたときだけ自動で停止） =====
 function startAutoUpdate() {
   stopAutoUpdate();
-  ScriptApp.newTrigger('autoBuild').timeBased().everyMinutes(CONFIG.AUTO_INTERVAL_MIN).create();
+  ScriptApp.newTrigger('autoBuild').timeBased().everyDays(1).atHour(CONFIG.AUTO_HOUR).create();
   SpreadsheetApp.getActive().toast(
-    `自動更新を開始しました（${CONFIG.AUTO_INTERVAL_MIN}分ごと）`, '公売リスト', 10);
+    `自動更新を開始しました（毎日${CONFIG.AUTO_HOUR}時台）`, '公売リスト', 10);
 }
 
 function stopAutoUpdate() {
@@ -13,6 +13,5 @@ function stopAutoUpdate() {
 }
 
 function autoBuild() {
-  const remaining = buildList();
-  if (remaining !== null && remaining <= 0) stopAutoUpdate();
+  buildList();
 }
