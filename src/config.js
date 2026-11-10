@@ -18,9 +18,7 @@ const HEADERS = ['物件ID', 'URL', '物件名', '執行機関', '見積価額�
 const COL = {
   ID: 1, NAME: 3, PRICE: 5, START: 6, END: 7, MARKET: 8, RATIO: 9,
   MEMO: 10, FETCHED: 11, MISSING: 12, CATEGORY: 13,
-};
-const OLD_PERIOD_HEADER = '入札期間'; // 旧レイアウト（開始・終了が1列）の見出し
-const MISSING_MARK = '欠番';
+};const MISSING_MARK = '欠番';
 
 // 連番取得の進捗（スクリプトプロパティに保存）
 const PROP_NEXT_ID = 'NEXT_ID';           // 次に確認するID

@@ -1,26 +1,10 @@
 // ===== シート操作 =====
 const DATE_FORMAT = 'yyyy/mm/dd hh:mm';
 
-// 見出し行を最新の HEADERS に揃える（列を追加したときの既存シート対応）
+// 見出し行を書き込む（列構成を変えたときは、一覧シートを作り直して取り直す）
 function ensureHeaders(sheet) {
-  migratePeriodColumn(sheet);
   sheet.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]).setFontWeight('bold');
   sheet.setFrozenRows(1);
-}
-
-// 旧レイアウト（「入札期間」1列）なら「入札終了」列を挿入し、既存の値を開始・終了に分ける。
-// 列の挿入なので、右側の手入力の相場や相場比の数式もそのまま1列右にずれる
-function migratePeriodColumn(sheet) {
-  if (sheet.getRange(1, COL.START).getValue() !== OLD_PERIOD_HEADER) return;
-  sheet.insertColumnAfter(COL.START);
-  const n = sheet.getLastRow() - 1;
-  if (n <= 0) return;
-  const rows = sheet.getRange(2, COL.START, n, 1).getValues().map(([v]) => {
-    if (v === '') return ['', ''];
-    const p = parsePeriod(String(v));
-    return [p.start, p.end];
-  });
-  sheet.getRange(2, COL.START, n, 2).setValues(rows).setNumberFormat(DATE_FORMAT);
 }
 
 function itemUrl(id) {
