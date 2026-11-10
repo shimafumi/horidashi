@@ -11,8 +11,9 @@ function itemUrl(id) {
 
 // 物件名〜入札終了（COL.NAME から順に並ぶ列）の値
 function itemValues(item) {
-  return [item.name || '', item.category || '', item.agency || '', item.price || '',
-          item.start || '', item.end || ''];
+  const cat = item.category || {};
+  return [item.name || '', cat.large || '', cat.middle || '', cat.small || '',
+          item.agency || '', item.price || '', item.start || '', item.end || ''];
 }
 
 // 物件ID・URL・取得日時だけを入れた行

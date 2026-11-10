@@ -34,15 +34,15 @@ function pickDate(t, label) {
   return m ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]), Number(m[4]), Number(m[5])) : null;
 }
 
-// カテゴリ：パンくずリストから取り、「大分類 > 小分類」の形で返す
-// 例：「不動産 > 不動産 > 土地 > 東北 > 物件詳細」→「不動産 > 土地 > 東北」
+// カテゴリ：パンくずリストの1つ目を大分類、2つ目を中分類、残りを「 > 」でつないで小分類にする
+// 例：「一般 > スポーツ、レジャー > 船、ボート > パーツ > 物件詳細」
+//   → { large: '一般', middle: 'スポーツ、レジャー', small: '船、ボート > パーツ' }
+// 列の意味をそろえるため、同じ名前が続く階層（例：不動産 > 不動産）もそのまま残す
 function pickCategory(html, name) {
-  const crumbs = breadcrumbFromHtml(html) || [];
-  return crumbs.filter((c, i) => c &&
+  const crumbs = (breadcrumbFromHtml(html) || []).filter(c =>
     !/^(トップ|ホーム|TOP|HOME|物件詳細|詳細)$|官公庁オークション/i.test(c) &&
-    c !== name && !c.startsWith('【') &&
-    c !== crumbs[i - 1]) // 同じ名前が続く階層はまとめる
-    .join(' > ');
+    c !== name && !c.startsWith('【'));
+  return { large: crumbs[0] || '', middle: crumbs[1] || '', small: crumbs.slice(2).join(' > ') };
 }
 
 function breadcrumbFromHtml(html) {

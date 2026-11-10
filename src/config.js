@@ -2,7 +2,7 @@
 const CONFIG = {
   LIST_SHEET: '一覧',
   BASE_URL: 'https://kankocho.jp',
-  START_ID: 72984,              // 連番取得を始める物件ID（初回、またはリセット後に使用）
+  START_ID: 73822,              // 連番取得を始める物件ID（初回、またはリセット後に使用）
   SLEEP_MS: 1000,               // 1件ごとの待ち時間（ミリ秒）。429/403が出たら増やす
   MAX_ITEMS_PER_RUN: 100,       // 1回の実行で物件ページにアクセスする最大回数
   PROBE_COUNT: 3,               // 欠番が出たとき、先の物件を何回チェックするか（すべて欠番なら最新まで取得済みとみなす）
@@ -13,12 +13,12 @@ const CONFIG = {
   AUTO_HOUR: 6,                 // 自動更新（毎日1回）を実行する時間帯（0〜23時）
 };
 
-const HEADERS = ['物件ID', 'URL', '物件名', 'カテゴリ', '執行機関', '見積価額等(円)', '入札開始', '入札終了',
-                 '取得日時', '欠番', '欠番確認回数'];
+const HEADERS = ['物件ID', 'URL', '物件名', '大分類', '中分類', '小分類', '執行機関', '見積価額等(円)',
+                 '入札開始', '入札終了', '取得日時', '欠番', '欠番確認回数'];
 // 列番号（1始まり）
 const COL = {
-  ID: 1, URL: 2, NAME: 3, CATEGORY: 4, PRICE: 6, START: 7, END: 8,
-  FETCHED: 9, MISSING: 10, MISSING_COUNT: 11,
+  ID: 1, URL: 2, NAME: 3, PRICE: 8, START: 9, END: 10,
+  FETCHED: 11, MISSING: 12, MISSING_COUNT: 13,
 };
 const MISSING_MARK = '欠番';
 const DATE_FORMAT = 'yyyy/mm/dd hh:mm';
