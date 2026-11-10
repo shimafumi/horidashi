@@ -32,6 +32,21 @@ curl "コピーしたURL"
 - `npm run pull`：Apps Script 側の変更をローカルに取り込む
 - `npm run watch`：保存するたびに自動で反映
 
+### ファイル構成（`src/`）
+
+Apps Script では全ファイルが同じグローバル空間で動くため、import なしで互いの関数・定数を使えます。
+
+| ファイル | 内容 |
+| --- | --- |
+| `config.js` | 設定（`CONFIG`）と定数 |
+| `main.js` | 一覧の更新処理（連番取得・欠番の再確認） |
+| `menu.js` | メニュー、初期設定、HTML確認、通知 |
+| `sheet.js` | 一覧シートへの書き込み |
+| `trigger.js` | 自動更新のトリガー |
+| `fetch.js` | ページ取得と物件あり／欠番の判定 |
+| `robots.js` | robots.txt の読み込みと判定 |
+| `parser.js` | 物件ページの HTML 解析 |
+
 ## 使い方
 
 1. 「公売リスト > ① 初期設定」を実行
