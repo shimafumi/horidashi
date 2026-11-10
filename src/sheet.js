@@ -15,20 +15,21 @@ function colLetter(n) {
   return String.fromCharCode(64 + n); // 26列（Z）まで
 }
 
-// 物件名〜入札終了（COL.NAME から5列）の値
+// 物件名〜入札終了（COL.NAME から6列）の値
 function itemValues(item) {
-  return [item.name || '', item.agency || '', item.price || '', item.start || '', item.end || ''];
+  return [item.name || '', item.category || '', item.agency || '', item.price || '',
+          item.start || '', item.end || ''];
 }
 
 function itemRow(id, item) {
   return [
     String(id), itemUrl(id), ...itemValues(item),
-    '', '', item.price ? '' : '要確認：価格を取得できず', new Date(), '', item.category || '',
+    '', '', item.price ? '' : '要確認：価格を取得できず', new Date(), '',
   ];
 }
 
 function missingRow(id) {
-  return [String(id), itemUrl(id), '', '', '', '', '', '', '', '', new Date(), MISSING_MARK, ''];
+  return [String(id), itemUrl(id), '', '', '', '', '', '', '', '', '', new Date(), MISSING_MARK];
 }
 
 function appendRows(sheet, rows) {

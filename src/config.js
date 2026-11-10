@@ -12,12 +12,12 @@ const CONFIG = {
   AUTO_INTERVAL_MIN: 10,        // 自動更新の間隔（分）。1, 5, 10, 15, 30 のいずれか
 };
 
-const HEADERS = ['物件ID', 'URL', '物件名', '執行機関', '見積価額等(円)', '入札開始', '入札終了',
-                 '相場(手入力・円)', '相場比', 'メモ', '取得日時', '欠番', 'カテゴリ'];
+const HEADERS = ['物件ID', 'URL', '物件名', 'カテゴリ', '執行機関', '見積価額等(円)', '入札開始', '入札終了',
+                 '相場(手入力・円)', '相場比', 'メモ', '取得日時', '欠番'];
 // 列番号（1始まり）
 const COL = {
-  ID: 1, NAME: 3, PRICE: 5, START: 6, END: 7, MARKET: 8, RATIO: 9,
-  MEMO: 10, FETCHED: 11, MISSING: 12, CATEGORY: 13,
+  ID: 1, NAME: 3, CATEGORY: 4, PRICE: 6, START: 7, END: 8, MARKET: 9, RATIO: 10,
+  MEMO: 11, FETCHED: 12, MISSING: 13,
 };const MISSING_MARK = '欠番';
 
 // 連番取得の進捗（スクリプトプロパティに保存）

@@ -191,10 +191,10 @@ function recheckMissing(sheet, data, access) {
     if (page.status === 'error') break;
     if (page.status === 'ok') {
       const item = page.item;
-      sheet.getRange(d.row, COL.NAME, 1, 5).setValues([itemValues(item)]);
+      sheet.getRange(d.row, COL.NAME, 1, 6).setValues([itemValues(item)]);
       sheet.getRange(d.row, COL.START, 1, 2).setNumberFormat(DATE_FORMAT);
       if (!item.price) sheet.getRange(d.row, COL.MEMO).setValue('要確認：価格を取得できず');
-      sheet.getRange(d.row, COL.FETCHED, 1, 3).setValues([[new Date(), '', item.category || '']]);
+      sheet.getRange(d.row, COL.FETCHED, 1, 2).setValues([[new Date(), '']]);
       found++;
     } else {
       sheet.getRange(d.row, COL.FETCHED).setValue(new Date());
