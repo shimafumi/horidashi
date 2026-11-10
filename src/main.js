@@ -172,14 +172,17 @@ function probeAhead(id, known, access, cache) {
 }
 
 // 欠番の行のうち、前回確認から RECHECK_HOURS 以上たったものを再確認する
+// 欠番と判定した回数が MISSING_CHECK_LIMIT に達した行は対象にしない
 function recheckMissing(sheet, data, access) {
   const threshold = Date.now() - CONFIG.RECHECK_HOURS * 60 * 60 * 1000;
   const due = [];
   data.forEach((r, i) => {
     if (r[COL.MISSING - 1] !== MISSING_MARK) return;
+    const count = Number(r[COL.MISSING_COUNT - 1]) || 0;
+    if (count >= CONFIG.MISSING_CHECK_LIMIT) return;
     const fetched = r[COL.FETCHED - 1];
     if (!(fetched instanceof Date) || fetched.getTime() < threshold) {
-      due.push({ row: i + 2, id: String(r[COL.ID - 1]) });
+      due.push({ row: i + 2, id: String(r[COL.ID - 1]), count });
     }
   });
 
@@ -194,10 +197,10 @@ function recheckMissing(sheet, data, access) {
       sheet.getRange(d.row, COL.NAME, 1, 6).setValues([itemValues(item)]);
       sheet.getRange(d.row, COL.START, 1, 2).setNumberFormat(DATE_FORMAT);
       if (!item.price) sheet.getRange(d.row, COL.MEMO).setValue('要確認：価格を取得できず');
-      sheet.getRange(d.row, COL.FETCHED, 1, 2).setValues([[new Date(), '']]);
+      sheet.getRange(d.row, COL.FETCHED, 1, 3).setValues([[new Date(), '', '']]);
       found++;
     } else {
-      sheet.getRange(d.row, COL.FETCHED).setValue(new Date());
+      sheet.getRange(d.row, COL.FETCHED, 1, 3).setValues([[new Date(), MISSING_MARK, d.count + 1]]);
     }
     checked++;
   }
