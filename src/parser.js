@@ -17,44 +17,32 @@ function parseItem(html) {
   };
 }
 
-// 例：「開始： 2026年11月17日13時0分 〜 終了： 2026年11月19日13時0分 …」
-// → { start: Date, end: Date }。日時が読めなければ start に元の文字列を入れる
+// 「入札期間」の後ろの文字列から開始・終了の日時を取る
+// 例：「開始： 2026年11月17日13時0分 〜 終了： 2026年11月19日13時0分 …」→ { start: Date, end: Date }
+// 公開中止の物件（「中 止」）は start に「中止」を入れる。それ以外で読めなければ空
 function parsePeriod(s) {
-  const re = /(\d{4})年(\d{1,2})月(\d{1,2})日\s*(\d{1,2})時(\d{1,2})分/g;
-  const dates = [];
-  let m;
-  while ((m = re.exec(toHalfWidth(s))) && dates.length < 2) {
-    dates.push(new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]), Number(m[4]), Number(m[5])));
-  }
-  if (!dates.length) return { start: s.trim(), end: '' };
-  return { start: dates[0], end: dates[1] || '' };
+  const t = toHalfWidth(s);
+  const start = pickDate(t, '開始');
+  const end = pickDate(t, '終了');
+  if (start || end) return { start: start || '', end: end || '' };
+  return { start: /^中\s*止/.test(t.trim()) ? '中止' : '', end: '' };
 }
 
-// カテゴリ：パンくずリスト（構造化データ → HTML の順）から取り、「大分類 > 小分類」の形で返す
+// 「ラベル： 2026年11月17日13時0分」の日時。ラベルの直後になければ null（後ろの別項目の日時は拾わない）
+function pickDate(t, label) {
+  const m = t.match(new RegExp(label + '[:：]\\s*(\\d{4})年(\\d{1,2})月(\\d{1,2})日\\s*(\\d{1,2})時(\\d{1,2})分'));
+  return m ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]), Number(m[4]), Number(m[5])) : null;
+}
+
+// カテゴリ：パンくずリストから取り、「大分類 > 小分類」の形で返す
 // 例：「不動産 > 不動産 > 土地 > 東北 > 物件詳細」→「不動産 > 土地 > 東北」
 function pickCategory(html, name) {
-  const crumbs = breadcrumbFromJsonLd(html) || breadcrumbFromHtml(html) || [];
+  const crumbs = breadcrumbFromHtml(html) || [];
   return crumbs.filter((c, i) => c &&
     !/^(トップ|ホーム|TOP|HOME|物件詳細|詳細)$|官公庁オークション/i.test(c) &&
     c !== name && !c.startsWith('【') &&
     c !== crumbs[i - 1]) // 同じ名前が続く階層はまとめる
     .join(' > ');
-}
-
-function breadcrumbFromJsonLd(html) {
-  const re = /<script[^>]*application\/ld\+json[^>]*>([\s\S]*?)<\/script>/gi;
-  let m;
-  while ((m = re.exec(html))) {
-    let data;
-    try { data = JSON.parse(m[1]); } catch (e) { continue; }
-    const nodes = [].concat(data, data['@graph'] || []);
-    const list = nodes.find(n => n && n['@type'] === 'BreadcrumbList');
-    if (!list || !Array.isArray(list.itemListElement)) continue;
-    return list.itemListElement
-      .slice().sort((a, b) => (a.position || 0) - (b.position || 0))
-      .map(e => String(e.name || (e.item && e.item.name) || '').trim());
-  }
-  return null;
 }
 
 function breadcrumbFromHtml(html) {
