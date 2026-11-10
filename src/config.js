@@ -14,11 +14,11 @@ const CONFIG = {
 };
 
 const HEADERS = ['物件ID', 'URL', '物件名', 'カテゴリ', '執行機関', '見積価額等(円)', '入札開始', '入札終了',
-                 '相場(手入力・円)', '相場比', 'メモ', '取得日時', '欠番', '欠番確認回数'];
+                 '取得日時', '欠番', '欠番確認回数'];
 // 列番号（1始まり）
 const COL = {
-  ID: 1, NAME: 3, CATEGORY: 4, PRICE: 6, START: 7, END: 8, MARKET: 9, RATIO: 10,
-  MEMO: 11, FETCHED: 12, MISSING: 13, MISSING_COUNT: 14,
+  ID: 1, NAME: 3, CATEGORY: 4, PRICE: 6, START: 7, END: 8,
+  FETCHED: 9, MISSING: 10, MISSING_COUNT: 11,
 };const MISSING_MARK = '欠番';
 
 // 連番取得の進捗（スクリプトプロパティに保存）

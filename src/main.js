@@ -8,7 +8,6 @@
  *  2. シートを再読み込みすると「公売リスト」メニューが表示される
  *  3. 「① 初期設定」を実行
  *  4. 「② 一覧を更新」または「自動更新を開始」を実行
- *  5. 「一覧」シートの「相場」列に落札相場を入れると相場比が出る
  *
  * 欠番（ページが空・存在しないID）も一覧に「欠番」として残し、
  * 後から公開される場合に備えて RECHECK_HOURS ごとに再確認する。
@@ -109,7 +108,7 @@ function scanForward(known, access) {
   let error = false;
 
   while (true) {
-    if (known.has(String(id))) { flush(); id++; continue; } // 取得済み（手入力した相場を上書きしない）
+    if (known.has(String(id))) { flush(); id++; continue; } // 取得済み
     let page = cache.get(id);
     if (!page) {
       if (!access.canFetch()) break;
@@ -196,7 +195,6 @@ function recheckMissing(sheet, data, access) {
       const item = page.item;
       sheet.getRange(d.row, COL.NAME, 1, 6).setValues([itemValues(item)]);
       sheet.getRange(d.row, COL.START, 1, 2).setNumberFormat(DATE_FORMAT);
-      if (!item.price) sheet.getRange(d.row, COL.MEMO).setValue('要確認：価格を取得できず');
       sheet.getRange(d.row, COL.FETCHED, 1, 3).setValues([[new Date(), '', '']]);
       found++;
     } else {

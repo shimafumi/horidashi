@@ -11,10 +11,6 @@ function itemUrl(id) {
   return `${CONFIG.BASE_URL}/items/${id}/`;
 }
 
-function colLetter(n) {
-  return String.fromCharCode(64 + n); // 26列（Z）まで
-}
-
 // 物件名〜入札終了（COL.NAME から6列）の値
 function itemValues(item) {
   return [item.name || '', item.category || '', item.agency || '', item.price || '',
@@ -23,27 +19,18 @@ function itemValues(item) {
 
 function itemRow(id, item) {
   return [
-    String(id), itemUrl(id), ...itemValues(item),
-    '', '', item.price ? '' : '要確認：価格を取得できず', new Date(), '', '',
+    String(id), itemUrl(id), ...itemValues(item), new Date(), '', '',
   ];
 }
 
 function missingRow(id) {
-  return [String(id), itemUrl(id), '', '', '', '', '', '', '', '', '', new Date(), MISSING_MARK, 1];
+  return [String(id), itemUrl(id), '', '', '', '', '', '', new Date(), MISSING_MARK, 1];
 }
 
 function appendRows(sheet, rows) {
   if (!rows.length) return;
   const r0 = sheet.getLastRow() + 1;
   sheet.getRange(r0, 1, rows.length, HEADERS.length).setValues(rows);
-  const p = colLetter(COL.PRICE);
-  const mk = colLetter(COL.MARKET);
-  const formulas = rows.map((_, i) => {
-    const r = r0 + i;
-    return [`=IF(OR(${p}${r}="",${mk}${r}=""),"",${p}${r}/${mk}${r})`];
-  });
-  sheet.getRange(r0, COL.RATIO, rows.length, 1).setFormulas(formulas).setNumberFormat('0%');
   sheet.getRange(r0, COL.PRICE, rows.length, 1).setNumberFormat('#,##0');
-  sheet.getRange(r0, COL.MARKET, rows.length, 1).setNumberFormat('#,##0');
   sheet.getRange(r0, COL.START, rows.length, 2).setNumberFormat(DATE_FORMAT);
 }
