@@ -194,7 +194,7 @@ function recheckMissing(sheet, data, access) {
       sheet.getRange(d.row, COL.NAME, 1, 4)
         .setValues([[item.name || '', item.agency || '', item.price || '', item.period || '']]);
       if (!item.price) sheet.getRange(d.row, COL.MEMO).setValue('要確認：価格を取得できず');
-      sheet.getRange(d.row, COL.FETCHED, 1, 2).setValues([[new Date(), '']]);
+      sheet.getRange(d.row, COL.FETCHED, 1, 3).setValues([[new Date(), '', item.category || '']]);
       found++;
     } else {
       sheet.getRange(d.row, COL.FETCHED).setValue(new Date());

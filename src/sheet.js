@@ -12,12 +12,12 @@ function itemUrl(id) {
 function itemRow(id, item) {
   return [
     String(id), itemUrl(id), item.name || '', item.agency || '', item.price || '', item.period || '',
-    '', '', item.price ? '' : '要確認：価格を取得できず', new Date(), '',
+    '', '', item.price ? '' : '要確認：価格を取得できず', new Date(), '', item.category || '',
   ];
 }
 
 function missingRow(id) {
-  return [String(id), itemUrl(id), '', '', '', '', '', '', '', new Date(), MISSING_MARK];
+  return [String(id), itemUrl(id), '', '', '', '', '', '', '', new Date(), MISSING_MARK, ''];
 }
 
 function appendRows(sheet, rows) {

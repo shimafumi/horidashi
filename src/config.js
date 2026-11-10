@@ -13,8 +13,9 @@ const CONFIG = {
 };
 
 const HEADERS = ['物件ID', 'URL', '物件名', '執行機関', '見積価額等(円)', '入札期間',
-                 '相場(手入力・円)', '相場比', 'メモ', '取得日時', '欠番'];
-const COL = { ID: 1, NAME: 3, MEMO: 9, FETCHED: 10, MISSING: 11 }; // 列番号（1始まり）
+                 '相場(手入力・円)', '相場比', 'メモ', '取得日時', '欠番', 'カテゴリ'];
+// 列番号（1始まり）。カテゴリは既存シートの列がずれないよう末尾に追加
+const COL = { ID: 1, NAME: 3, MEMO: 9, FETCHED: 10, MISSING: 11, CATEGORY: 12 };
 const MISSING_MARK = '欠番';
 
 // 連番取得の進捗（スクリプトプロパティに保存）

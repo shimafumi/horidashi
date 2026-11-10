@@ -5,12 +5,54 @@ function parseItem(html) {
   // 例：「【東京局４２０３－１】シャワーヘッド：東京国税局のインターネット公売物件詳細 - KSI官公庁オークション」
   const m = title.match(/^(.*)：(.+?)の(インターネット公売|公有財産売却)/);
   const text = toText(html);
+  const name = m ? m[1] : title.replace(/\s*-\s*KSI官公庁オークション.*$/, '');
   return {
-    name: m ? m[1] : title.replace(/\s*-\s*KSI官公庁オークション.*$/, ''),
+    name: name,
     agency: m ? m[2] : '',
     price: pickYen(text, ['見積価額', '予定価格', '最低売却価格', '売却価格']),
     period: pickAfter(text, ['入札期間', '入札受付期間', '申込期間'], 50),
+    category: pickCategory(html, text, name),
   };
+}
+
+// カテゴリ：構造化データ → パンくずリスト → 「カテゴリ」見出しの順に探す
+// 階層があれば「大分類 > 小分類」の形で返す
+function pickCategory(html, text, name) {
+  const crumbs = breadcrumbFromJsonLd(html) || breadcrumbFromHtml(html);
+  if (crumbs) {
+    // 例：「トップ > 不動産 > 不動産 > 土地 > 東北 > 物件詳細」→「不動産 > 土地 > 東北」
+    const cats = crumbs.filter((c, i) => c &&
+      !/^(トップ|ホーム|TOP|HOME|物件詳細|詳細)$|官公庁オークション/i.test(c) &&
+      c !== name && !c.startsWith('【') &&
+      c !== crumbs[i - 1]); // 同じ名前が続く階層はまとめる
+    if (cats.length) return cats.join(' > ');
+  }
+  const after = pickAfter(text, ['カテゴリー', 'カテゴリ'], 40).replace(/^[:：]\s*/, '');
+  return after.split(' ')[0] || '';
+}
+
+function breadcrumbFromJsonLd(html) {
+  const re = /<script[^>]*application\/ld\+json[^>]*>([\s\S]*?)<\/script>/gi;
+  let m;
+  while ((m = re.exec(html))) {
+    let data;
+    try { data = JSON.parse(m[1]); } catch (e) { continue; }
+    const nodes = [].concat(data, data['@graph'] || []);
+    const list = nodes.find(n => n && n['@type'] === 'BreadcrumbList');
+    if (!list || !Array.isArray(list.itemListElement)) continue;
+    return list.itemListElement
+      .slice().sort((a, b) => (a.position || 0) - (b.position || 0))
+      .map(e => String(e.name || (e.item && e.item.name) || '').trim());
+  }
+  return null;
+}
+
+function breadcrumbFromHtml(html) {
+  const m = html.match(/<(nav|ol|ul|div)[^>]*(?:class="[^"]*breadcrumb[^"]*"|aria-label="[^"]*(?:breadcrumb|パンくず)[^"]*")[^>]*>([\s\S]*?)<\/\1>/i);
+  if (!m) return null;
+  const parts = m[2].match(/<li[^>]*>[\s\S]*?<\/li>/gi) || m[2].match(/<a[^>]*>[\s\S]*?<\/a>/gi) || [];
+  const crumbs = parts.map(p => toText(p).replace(/[>＞›»]/g, '').trim()).filter(Boolean);
+  return crumbs.length ? crumbs : null;
 }
 
 function toText(html) {
