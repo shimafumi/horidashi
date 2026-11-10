@@ -1,0 +1,24 @@
+{
+  "name": "horidashi",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "remoteUser": "node",
+  "mounts": [
+    "source=horidashi-clasp-auth,target=/home/node/.config/clasp,type=volume"
+  ],
+  "postCreateCommand": "sudo chown node:node /home/node/.config/clasp && npm install",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode"
+      ],
+      "settings": {
+        "files.associations": {
+          "*.gs": "javascript"
+        }
+      }
+    }
+  }
+}

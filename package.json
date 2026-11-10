@@ -1,0 +1,14 @@
+{
+  "name": "horidashi",
+  "version": "1.0.0",
+  "private": true,
+  "description": "官公庁オークションの出品物件をスプレッドシートに一覧化する GAS",
+  "scripts": {
+    "push": "clasp push",
+    "pull": "clasp pull",
+    "watch": "clasp push --watch"
+  },
+  "devDependencies": {
+    "@types/google-apps-script": "^1.0.0"
+  }
+}
