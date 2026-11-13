@@ -1,18 +1,31 @@
 /**
  * horidashi - 官公庁オークション 物件リスト作成スクリプト
+ *
  * 物件IDは連番なので、CONFIG.START_ID から順に物件ページを取得していく。
- * 使い方・仕様は README.md を参照。
+ *
+ * 使い方：
+ *  1. スプレッドシートの「拡張機能 > Apps Script」にこのコードを反映（clasp push）
+ *  2. シートを再読み込みすると「公売リスト」メニューが表示される
+ *  3. 「① 初期設定」を実行
+ *  4. 「② 一覧を更新」または「自動更新を開始」を実行
+ *
+ * 欠番（ページが空・存在しないID）も一覧に「欠番」として残し、
+ * 後から公開される場合に備えて RECHECK_HOURS ごとに再確認する。
  */
 
 // ===== メイン処理 =====
+/**
+ * 戻り値：0なら完了（最新まで取得済みで再確認待ちの欠番もなし）、
+ *         正の数なら続きあり、-1ならエラー・アクセス制限で中断、nullなら別の実行中
+ */
 function buildList() {
   const lock = LockService.getScriptLock();
   if (!lock.tryLock(1000)) {
     Logger.log('別の実行が進行中のためスキップしました');
-    return;
+    return null;
   }
   try {
-    buildListCore();
+    return buildListCore();
   } finally {
     lock.releaseLock();
   }
@@ -24,8 +37,9 @@ function buildListCore() {
   const sheet = ss.getSheetByName(CONFIG.LIST_SHEET);
   if (!sheet) {
     notify('先に「① 初期設定」を実行してください');
-    return;
+    return -1;
   }
+  ensureHeaders(sheet);
 
   const lastRow = sheet.getLastRow();
   const data = lastRow > 1 ? sheet.getRange(2, 1, lastRow - 1, HEADERS.length).getValues() : [];
@@ -59,16 +73,17 @@ function buildListCore() {
     stopAutoUpdate();
     ss.toast(`${summary}。サイトからアクセス制限を受けたため中断し、自動更新を停止しました。` +
       '待ち時間（SLEEP_MS）を増やし、時間を空けてから再開してください。', '公売リスト', 30);
-    return;
+    return -1;
   }
-  if (scan.error || recheck.error) {
+  if (scan.error) {
     ss.toast(`${summary}。取得エラーのため中断しました（実行ログを確認してください）。`, '公売リスト', 30);
-    return;
+    return -1;
   }
 
   const done = scan.reachedEnd && recheck.remaining === 0;
   ss.toast(`${summary}。次はID ${scan.nextId} から` +
     (done ? '（最新まで取得済み）' : '（もう一度実行すると続きを取得します）'), '公売リスト', 10);
+  return done ? 0 : 1;
 }
 
 /**
