@@ -3,6 +3,10 @@
 function ensureHeaders(sheet) {
   sheet.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]).setFontWeight('bold');
   sheet.setFrozenRows(1);
+  const lastRow = sheet.getLastRow();
+  if (lastRow > 1) {
+    sheet.getRange(2, COL.FETCHED, lastRow - 1, 1).setNumberFormat(DATE_FORMAT);
+  }
 }
 
 function itemUrl(id) {
@@ -45,4 +49,5 @@ function appendRows(sheet, rows) {
   sheet.getRange(r0, 1, rows.length, HEADERS.length).setValues(rows);
   sheet.getRange(r0, COL.PRICE, rows.length, 1).setNumberFormat('#,##0');
   sheet.getRange(r0, COL.START, rows.length, 2).setNumberFormat(DATE_FORMAT);
+  sheet.getRange(r0, COL.FETCHED, rows.length, 1).setNumberFormat(DATE_FORMAT);
 }

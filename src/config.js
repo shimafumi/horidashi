@@ -21,7 +21,7 @@ const COL = {
   FETCHED: 11, MISSING: 12, MISSING_COUNT: 13,
 };
 const MISSING_MARK = '欠番';
-const DATE_FORMAT = 'yyyy/mm/dd hh:mm';
+const DATE_FORMAT = 'yyyy/mm/dd hh:mm:ss';
 
 // 連番取得の進捗（スクリプトプロパティに保存）
 const PROP_NEXT_ID = 'NEXT_ID';           // 次に確認するID
