@@ -7,6 +7,7 @@ function onOpen() {
     .addSeparator()
     .addItem('自動更新を開始', 'startAutoUpdate')
     .addItem('自動更新を停止', 'stopAutoUpdate')
+    .addItem('自動更新状況を確認', 'showAutoUpdateStatus')
     .addSeparator()
     .addItem('連番取得の位置をリセット', 'resetCursor')
     .addItem('HTML確認（物件IDを指定）', 'debugItem')

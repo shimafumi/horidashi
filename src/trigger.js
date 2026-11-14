@@ -12,6 +12,16 @@ function stopAutoUpdate() {
     .forEach(t => ScriptApp.deleteTrigger(t));
 }
 
+function showAutoUpdateStatus() {
+  const triggerCount = ScriptApp.getProjectTriggers()
+    .filter(t => t.getHandlerFunction() === 'autoBuild')
+    .length;
+  const status = triggerCount === 0
+    ? '自動更新は停止中です。'
+    : `自動更新は有効です（トリガー ${triggerCount} 件）。\n現在の設定値: ${CONFIG.AUTO_INTERVAL_MIN} 分ごと`;
+  notify(status);
+}
+
 function autoBuild() {
   const remaining = buildList();
   if (remaining !== null && remaining <= 0) stopAutoUpdate();
